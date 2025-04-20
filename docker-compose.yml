@@ -1,0 +1,56 @@
+services:
+  backend:
+    container_name: kupipodariday-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: lenachest/kupipodariday-backend
+    env_file: .env
+    restart: always
+    ports:
+      - "4000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+  frontend:
+    container_name: kupipodariday-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: lenachest/kupipodariday-frontend
+    ports:
+      - "3001:80"
+    restart: always
+    networks:
+      - external
+
+  postgres:
+    container_name: postgres
+    image: "postgres:alpine"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/data/postgres
+    env_file: .env
+    restart: always
+    networks:
+      - internal
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+networks:
+  internal:
+  external:
